@@ -30,13 +30,25 @@ class GroceryItem
 
   def get_customer_products(requested_products, age)
     requested_products.each do |prd|
-      item_info = @available_items[prd[0]]
-      item_info["quantity"] = prd[-1]
-      item_info["price"] = Calculation.price_cal_with_qty(item_info["price"], prd[-1], age, item_info["offer_percentage"])
+      item_info = @available_items[prd[0]].dup
+      item_info["quantity"] = prd[-1].to_i
+      item_info["price"] = Calculation.price_cal_with_qty(item_info["price"], prd[-1].to_i, age.to_i, item_info["offer_percentage"])
       @customer_cart["purchased_item"] << item_info
     end
     @customer_cart["total"] = Calculation.total_cost(@customer_cart["purchased_item"])
+    #update product quantity
+    update_product_quantity(@available_items, @customer_cart["purchased_item"])
     return @customer_cart
+  end
+
+  def update_product_quantity(available_items, purchased_item)
+    purchased_item.each do |product|
+      available_items.each do |key, value|
+        if value["product"] == product["product"]
+          @available_items[key]["quantity"] = value["quantity"] - product["quantity"]
+        end
+      end
+    end
   end
 
 end
