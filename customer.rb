@@ -11,6 +11,7 @@ class Customer
     @selected_items = Hash.new
     @selected_items[@name] = Hash.new
     validate_age(@age)
+    @welcome_count = 0
   end
 
   # If the user age is less 18 or not a valid age. We are not allowing to go further.
@@ -26,7 +27,12 @@ class Customer
 
   # In welcome note, we are givnig a  and list the available item in our store
   def all_available_items
-    p "Hi #{@name} Welcome to the Grocy Grocery. Please find the available items in our store"
+    @welcome_count += 1
+    if @welcome_count == 0
+      p "Hi #{@name} Welcome to the Grocy Grocery. Please find the available items in our store"
+    else
+      p "Please find the available items in our store!"
+    end
     @groceries.listed_item.each {|key, value|
       p "Product ID: #{key}, Name: #{value['product']}, Available Qty: #{value['quantity']}, Price Per Unit: #{value['price']}"
       p "-----"
@@ -40,6 +46,7 @@ class Customer
         p "Name: #{final_list['product']}, Purchased Qty: #{final_list['quantity']}, Price: #{final_list['price']}"
       end
       p "Total amount: #{@selected_items["total"]}"
+      all_available_items
     else
       p "Thanks for shopping with us."
     end
