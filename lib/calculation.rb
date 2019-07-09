@@ -4,7 +4,7 @@ module Calculation
   def price_cal_with_qty(price, req_qty, age, offer_per)
     cost_per_product = price * req_qty
     if age > 60
-      cost_per_product = offer_per.percent_of(cost_per_product)
+      cost_per_product = cost_per_product - percent_of(offer_per, cost_per_product)
     end
     return cost_per_product
   end
@@ -15,13 +15,8 @@ module Calculation
     return total
   end
 
-end
-
-
-class Numeric
-
-  def percent_of(n)
-    self.to_f / n.to_f * 100.0
+  def percent_of(offer_per, cost_per_product)
+    cost_per_product * offer_per / 100
   end
 
 end
