@@ -2,9 +2,8 @@ require "./lib/calculation"
 
 class CoupanCode
 
-	include Calculation
-
-	def initialize
+  include Calculation
+  def initialize
     @coupans = [{"code" => "AVAIL5", "offer_percentage" => 5},{"code" => "AVAIL10", "offer_percentage" => 10},{"code" => "AVAIL7", "offer_percentage" => 7}]
   end
 
