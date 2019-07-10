@@ -29,11 +29,10 @@ class GroceryItem
   end
 
   def get_customer_products(requested_products, age)
-    requested_products.each do |prd|
-      item_info = @available_items[prd[0]].dup
-      item_info["quantity"] = prd[-1].to_i
-      item_info["price"] = Calculation.price_cal_with_qty(item_info["price"], prd[-1].to_i, age.to_i, item_info["offer_percentage"])
-      @customer_cart["purchased_item"] << item_info
+    if @customer_cart["purchased_item"].empty?
+      create_new_item_cart(requested_products, age)
+    else
+      update_customer_cart(requested_products, age)
     end
     @customer_cart["total"] = Calculation.total_cost(@customer_cart["purchased_item"])
     #update product quantity
@@ -41,14 +40,37 @@ class GroceryItem
     return @customer_cart
   end
 
-  def update_product_quantity(available_items, purchased_item)
-    purchased_item.each do |product|
-      available_items.each do |key, value|
-        if value["product"] == product["product"]
-          @available_items[key]["quantity"] = value["quantity"] - product["quantity"]
-        end
+  def create_new_item_cart(requested_products, age)
+    requested_products.each do |prd|
+      item_info = @available_items[prd[0]].dup
+      item_info["quantity"] = prd[-1].to_i
+      item_info["price"] = Calculation.price_cal_with_qty(item_info["price"], prd[-1].to_i, age.to_i, item_info["offer_percentage"])
+      @customer_cart["purchased_item"] << item_info
+      #update the available product quantity
+      update_product_quantity(@available_items, prd)
+    end
+  end
+
+  def update_customer_cart(requested_products, age)
+    requested_products.each do |prd|
+      item_info = @available_items[prd[0]].dup
+      detect_product = @customer_cart["purchased_item"].detect {|f| f["product"] == item_info["product"] }
+      if !detect_product.nil?
+        detect_product["quantity"] = detect_product["quantity"] + prd[1].to_i
+        cal_product_price = Calculation.price_cal_with_qty(item_info["price"], prd[-1].to_i, age.to_i, item_info["offer_percentage"])
+        detect_product["price"] = detect_product["price"] + cal_product_price
+        #update the available product quantity
+        update_product_quantity(@available_items, prd)
+      else
+        create_new_item_cart(requested_products, age)
       end
     end
+  end
+
+  def update_product_quantity(available_items, purchased_item)
+    get_product_value = @available_items.detect {|key, value| 
+      value["quantity"] = value["quantity"] - purchased_item[-1].to_i if key == purchased_item[0]
+    }
   end
 
 end
