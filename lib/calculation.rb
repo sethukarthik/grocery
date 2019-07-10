@@ -15,8 +15,12 @@ module Calculation
     return total
   end
 
-  def percent_of(offer_per, cost_per_product)
-    cost_per_product * offer_per / 100
+  def grand_coupan(total_cost, percentage)
+    total_cost - percent_of(total_cost, percentage)
+  end
+
+  def percent_of(offer_per, cost)
+    cost * offer_per / 100
   end
 
 end
